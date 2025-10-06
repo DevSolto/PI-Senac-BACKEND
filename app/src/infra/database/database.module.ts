@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { DatabaseService } from './database.service';
-import { DatabaseController } from './database.controller';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
-  controllers: [DatabaseController],
-  providers: [DatabaseService],
+  controllers: [],
+  providers: [],
+  imports: [RedisModule],
 })
 export class DatabaseModule {}

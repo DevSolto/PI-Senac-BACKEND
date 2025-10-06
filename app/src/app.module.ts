@@ -1,10 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { RedisModule } from './infra/database/redis/redis.module';
+import { DevicesModule } from './domain/devices/devices.module';
+
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    EventEmitterModule.forRoot({
+      global: true,
+    }),
+    
+    RedisModule,
+    DevicesModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

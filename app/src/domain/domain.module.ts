@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { DevicesModule } from './devices/devices.module';
 
-@Module({})
+@Module({
+  imports: [DevicesModule]
+})
 export class DomainModule {}
