@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { RedisModule } from './infra/database/redis/redis.module';
-import { DevicesModule } from './domain/devices/devices.module';
+import { InfraModule } from './infra/infra.module';
+import { DomainModule } from './domain/domain.module';
 
 
 @Module({
@@ -11,9 +11,8 @@ import { DevicesModule } from './domain/devices/devices.module';
     EventEmitterModule.forRoot({
       global: true,
     }),
-    
-    RedisModule,
-    DevicesModule,
+    InfraModule,
+    DomainModule,
   ],
   controllers: [],
   providers: [],
