@@ -1,6 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SilosService } from './silos.service';
-import { CreateSiloDto } from './dto/create-silo.dto';
+import { CreateSiloDto } from './dto/silo.dto';
 import { UpdateSiloDto } from './dto/update-silo.dto';
 
 @Controller('silos')

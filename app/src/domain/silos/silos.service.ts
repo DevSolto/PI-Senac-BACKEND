@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSiloDto } from './dto/create-silo.dto';
+import { CreateSiloDto } from './dto/silo.dto';
 import { UpdateSiloDto } from './dto/update-silo.dto';
 
 @Injectable()

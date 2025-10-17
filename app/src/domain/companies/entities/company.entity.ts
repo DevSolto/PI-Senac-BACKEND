@@ -17,6 +17,9 @@ export class Company {
   @Column({ unique: true })
   name: string;
 
+  @Column({unique: true})
+  CNPJ: string;
+
   @Column({ nullable: true })
   description?: string;
 

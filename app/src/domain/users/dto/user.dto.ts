@@ -1,20 +1,66 @@
+import { IsString, IsOptional, IsEmail, IsEnum, IsBoolean, IsDate, IsNumber } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-
+import { Exclude, Expose, Type } from 'class-transformer';
 
 export class CreateUserDto {
-    name: string
-    email: string
-    password: string
-    role: 'admin' | 'user'
-    companyId: number
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+
+  @IsEnum(['admin', 'user'])
+  @IsOptional()
+  role?: 'admin' | 'user';
+
+  @IsBoolean()
+  @IsOptional()
+  mfa?: boolean;
+
+  @IsNumber()
+  companyId: number;
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
-export class ReturnUserDto {
-    id: number
-    name: string
-    email: string
-    role: 'admin' | 'user'
-    company?: ReturnCompanyDto
+export class CompanySummaryDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  name: string;
+}
+
+@Exclude()
+export class ReadUserDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  name: string;
+
+  @Expose()
+  email: string;
+
+  @Expose()
+  role: 'admin' | 'user';
+
+  @Expose()
+  mfa: boolean;
+
+  @Expose()
+  mfaEnabledAt?: Date;
+
+  @Expose()
+  @Type(() => CompanySummaryDto)
+  company: CompanySummaryDto;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
 }

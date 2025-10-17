@@ -1,6 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { DataProcessService } from './data.process.service';
-import { CreateDataProcessDto } from './dto/create-data.process.dto';
+import { CreateDataProcessDto } from './dto/data.process.dto';
 import { UpdateDataProcessDto } from './dto/update-data.process.dto';
 
 @Controller('data.process')
@@ -23,7 +31,10 @@ export class DataProcessController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDataProcessDto: UpdateDataProcessDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateDataProcessDto: UpdateDataProcessDto,
+  ) {
     return this.dataProcessService.update(+id, updateDataProcessDto);
   }
 

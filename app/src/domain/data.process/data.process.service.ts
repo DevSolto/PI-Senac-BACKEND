@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDataProcessDto } from './dto/create-data.process.dto';
+import { CreateDataProcessDto } from './dto/data.process.dto';
 import { UpdateDataProcessDto } from './dto/update-data.process.dto';
 
 @Injectable()
