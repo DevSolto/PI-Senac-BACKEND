@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Sse, MessageEvent } from '@nestjs/common'; // Query e DTO removidos daqui
+import { Controller, Get, Param, Sse, MessageEvent } from '@nestjs/common'; 
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Observable, fromEvent, filter, map } from 'rxjs';
 import { DevicesService } from './devices.service';
