@@ -44,7 +44,6 @@ export class Silo {
   @Column({ type: 'float', nullable: true })
   minAirQuality?: number;
 
-  // Relacionamento com empresa
   @ManyToOne(() => Company, (company) => company.silos, { onDelete: 'CASCADE' })
   company: Company;
 
