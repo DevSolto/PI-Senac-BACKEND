@@ -5,8 +5,9 @@ import { UsersModule } from './users/users.module';
 import { CompanysModule } from './companies/companys.module';
 import { SilosModule } from './silos/silos.module';
 import { AlertsModule } from './alerts/alerts.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [DevicesModule, DataProcessModule, UsersModule, CompanysModule, SilosModule, AlertsModule],
+  imports: [DevicesModule, DataProcessModule, UsersModule, CompanysModule, SilosModule, AlertsModule, AuthModule],
 })
 export class DomainModule {}

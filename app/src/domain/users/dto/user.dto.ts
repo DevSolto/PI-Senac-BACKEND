@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsEmail, IsEnum, IsBoolean, IsDate, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEmail,
+  IsEnum,
+  IsBoolean,
+  IsDate,
+  IsNumber,
+} from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 import { Exclude, Expose, Type } from 'class-transformer';
 
@@ -19,6 +27,14 @@ export class CreateUserDto {
   @IsBoolean()
   @IsOptional()
   mfa?: boolean;
+
+  @IsString()
+  @IsOptional()
+  mfaSecret?: string;
+
+  @IsDate()
+  @IsOptional()
+  mfaEnabledAt?: Date;
 
   @IsNumber()
   companyId: number;
