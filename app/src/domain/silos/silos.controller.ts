@@ -8,35 +8,50 @@ import {
   Delete,
 } from '@nestjs/common';
 import { SilosService } from './silos.service';
-import { CreateSiloDto } from './dto/silo.dto';
-import { UpdateSiloDto } from './dto/update-silo.dto';
+import { CreateSiloDto, UpdateSiloDto, ReadSiloDto } from './dto/silo.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('silos')
 export class SilosController {
   constructor(private readonly silosService: SilosService) {}
 
   @Post()
-  create(@Body() createSiloDto: CreateSiloDto) {
-    return this.silosService.create(createSiloDto);
+  async create(@Body() createSiloDto: CreateSiloDto): Promise<ReadSiloDto> {
+    const silo = await this.silosService.create(createSiloDto);
+    return plainToInstance(ReadSiloDto, silo, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.silosService.findAll();
+  async findAll(): Promise<ReadSiloDto[]> {
+    const silos = await this.silosService.findAll();
+    return plainToInstance(ReadSiloDto, silos, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.silosService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<ReadSiloDto> {
+    const silo = await this.silosService.findOne(+id);
+    return plainToInstance(ReadSiloDto, silo, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSiloDto: UpdateSiloDto) {
-    return this.silosService.update(+id, updateSiloDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateSiloDto: UpdateSiloDto,
+  ): Promise<ReadSiloDto> {
+    const silo = await this.silosService.update(+id, updateSiloDto);
+    return plainToInstance(ReadSiloDto, silo, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.silosService.remove(+id);
   }
 }

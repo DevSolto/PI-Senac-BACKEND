@@ -8,35 +8,50 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AlertsService } from './alerts.service';
-import { CreateAlertDto,ReadAlertDto, UpdateAlertDto } from './dto/alert.dto';
-
+import { CreateAlertDto, ReadAlertDto, UpdateAlertDto } from './dto/alert.dto';
+import { plainToInstance } from 'class-transformer'; 
 
 @Controller('alerts')
 export class AlertsController {
   constructor(private readonly alertsService: AlertsService) {}
 
   @Post()
-  create(@Body() createAlertDto: CreateAlertDto) {
-    return this.alertsService.create(createAlertDto);
+  async create(@Body() createAlertDto: CreateAlertDto): Promise<ReadAlertDto> {
+    const alert = await this.alertsService.create(createAlertDto);
+    return plainToInstance(ReadAlertDto, alert, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.alertsService.findAll();
+  async findAll(): Promise<ReadAlertDto[]> {
+    const alerts = await this.alertsService.findAll();
+    return plainToInstance(ReadAlertDto, alerts, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.alertsService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<ReadAlertDto> {
+    const alert = await this.alertsService.findOne(+id);
+    return plainToInstance(ReadAlertDto, alert, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlertDto: UpdateAlertDto) {
-    return this.alertsService.update(+id, updateAlertDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateAlertDto: UpdateAlertDto,
+  ): Promise<ReadAlertDto> {
+    const alert = await this.alertsService.update(+id, updateAlertDto);
+    return plainToInstance(ReadAlertDto, alert, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.alertsService.remove(+id);
   }
 }

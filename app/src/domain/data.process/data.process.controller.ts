@@ -8,38 +8,56 @@ import {
   Delete,
 } from '@nestjs/common';
 import { DataProcessService } from './data.process.service';
-import { CreateDataProcessDto } from './dto/data.process.dto';
-import { UpdateDataProcessDto } from './dto/update-data.process.dto';
+import { 
+  CreateDataProcessDto, 
+  UpdateDataProcessDto, 
+  ReadDataProcessDto 
+} from './dto/data.process.dto';
+import { plainToInstance } from 'class-transformer';
 
-@Controller('data.process')
+@Controller('data-process')
 export class DataProcessController {
   constructor(private readonly dataProcessService: DataProcessService) {}
 
   @Post()
-  create(@Body() createDataProcessDto: CreateDataProcessDto) {
-    return this.dataProcessService.create(createDataProcessDto);
+  async create(
+    @Body() createDataProcessDto: CreateDataProcessDto
+  ): Promise<ReadDataProcessDto> {
+    const data = await this.dataProcessService.create(createDataProcessDto);
+    return plainToInstance(ReadDataProcessDto, data, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.dataProcessService.findAll();
+  async findAll(): Promise<ReadDataProcessDto[]> {
+    const data = await this.dataProcessService.findAll();
+    return plainToInstance(ReadDataProcessDto, data, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.dataProcessService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<ReadDataProcessDto> {
+    const data = await this.dataProcessService.findOne(+id);
+    return plainToInstance(ReadDataProcessDto, data, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateDataProcessDto: UpdateDataProcessDto,
-  ) {
-    return this.dataProcessService.update(+id, updateDataProcessDto);
+  ): Promise<ReadDataProcessDto> {
+    const data = await this.dataProcessService.update(+id, updateDataProcessDto);
+    return plainToInstance(ReadDataProcessDto, data, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.dataProcessService.remove(+id);
   }
 }

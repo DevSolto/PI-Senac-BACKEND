@@ -1,9 +1,21 @@
-import { IsEnum, IsNumber, IsOptional, IsString, IsBoolean } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsBoolean,
+} from 'class-validator';
 import type { AlertType, AlertLevel } from '../entities/alert.entity';
 import { PartialType } from '@nestjs/mapped-types';
-import { Silo } from 'src/domain/silos/entities/silo.entity';
 import { Exclude, Expose, Type } from 'class-transformer';
 
+export class SiloSummaryDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  name: string;
+}
 export class CreateAlertDto {
   @IsEnum(['temperature', 'humidity', 'airQuality'])
   type: AlertType;
@@ -51,8 +63,8 @@ export class ReadAlertDto {
   message?: string;
 
   @Expose()
-  @Type(() => Silo)
-  silo: Silo;
+  @Type(() => SiloSummaryDto)
+  silo: SiloSummaryDto;
 
   @Expose()
   createdAt: Date;

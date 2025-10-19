@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSiloDto } from './dto/silo.dto';
-import { UpdateSiloDto } from './dto/update-silo.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Silo } from './entities/silo.entity';
+import { CreateSiloDto, UpdateSiloDto } from './dto/silo.dto';
+import { Company } from 'src/domain/companies/entities/company.entity';
 
 @Injectable()
 export class SilosService {
-  create(createSiloDto: CreateSiloDto) {
-    return 'This action adds a new silo';
+  constructor(
+    @InjectRepository(Silo)
+    private readonly siloRepo: Repository<Silo>,
+  ) {}
+
+  async create(dto: CreateSiloDto): Promise<Silo> {
+    const { companyId, ...siloData } = dto;
+
+    const silo = this.siloRepo.create({
+      ...siloData,
+      company: { id: companyId },
+    });
+    return this.siloRepo.save(silo);
   }
 
-  findAll() {
-    return `This action returns all silos`;
+  async findAll(): Promise<Silo[]> {
+    return this.siloRepo.find({ relations: ['company'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} silo`;
+  async findOne(id: number): Promise<Silo> {
+    const silo = await this.siloRepo.findOne({
+      where: { id },
+      relations: ['company']
+    });
+
+    if (!silo) {
+      throw new NotFoundException(`Silo #${id} not found`);
+    }
+    return silo;
   }
 
-  update(id: number, updateSiloDto: UpdateSiloDto) {
-    return `This action updates a #${id} silo`;
+  async update(id: number, dto: UpdateSiloDto): Promise<Silo> {
+    const { companyId, ...siloData } = dto;
+    
+    const silo = await this.siloRepo.preload({
+      id: id,
+      ...siloData,
+    });
+
+    if (!silo) {
+      throw new NotFoundException(`Silo #${id} not found`);
+    }
+
+    if (companyId) {
+      silo.company = { id: companyId } as Company;
+    }
+
+    return this.siloRepo.save(silo);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} silo`;
+  async remove(id: number): Promise<void> {
+    const silo = await this.findOne(id);
+    await this.siloRepo.remove(silo);
   }
 }

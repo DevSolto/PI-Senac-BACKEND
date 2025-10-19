@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional, IsDate } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class CreateDataProcessDto {
   @IsNumber()
@@ -64,7 +64,6 @@ export class CreateDataProcessDto {
   @IsOptional()
   criticalAlertsCount?: number;
 
-  // Outros indicadores
   @IsNumber()
   @IsOptional()
   percentOverTempLimit?: number;
@@ -86,6 +85,7 @@ export class ReadDataProcessDto {
   id: number;
 
   @Expose()
+  @Transform(({ obj }) => obj.silo?.name)
   siloName: string;
 
   @Expose()

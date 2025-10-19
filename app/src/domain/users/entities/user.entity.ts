@@ -25,11 +25,9 @@ export class User {
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
   role: 'admin' | 'user';
 
-  // indica se MFA esta ativo
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: true  })
   mfa: boolean;
-
-  // segredo base32 usado para gerar/verificar códigos TOTP
+  
   @Column({ nullable: true })
   mfaSecret?: string;
 

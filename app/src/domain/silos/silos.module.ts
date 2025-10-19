@@ -8,5 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([Silo])],
   controllers: [SilosController],
   providers: [SilosService],
+  exports: [TypeOrmModule]
 })
 export class SilosModule {}

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { Company } from '../companies/entities/company.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,9 +13,15 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async create(dto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = this.userRepo.create({ ...dto, password: hashedPassword });
+ async create(dto: CreateUserDto): Promise<User> {
+    const { companyId, ...userData } = dto;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const user = this.userRepo.create({
+      ...userData,
+      password: hashedPassword,
+      company: { id: companyId }, 
+    });
+
     return this.userRepo.save(user);
   }
 
@@ -33,20 +40,24 @@ export class UsersService {
   }
 
   async update(id: number, dto: UpdateUserDto): Promise<User> {
-    const user = await this.findById(id);
-    if (dto.password) {
-      dto.password = await bcrypt.hash(dto.password, 10);
+    const { companyId, ...userData } = dto;
+    const user = await this.findById(id); 
+
+    if (userData.password) {
+      userData.password = await bcrypt.hash(userData.password, 10);
     }
-    Object.assign(user, dto);
+    Object.assign(user, userData);
+    if (companyId) {
+      user.company = { id: companyId } as Company; // as Company necessario para o tipo
+    }
+
     return this.userRepo.save(user);
   }
-
   async remove(id: number): Promise<void> {
     const user = await this.findById(id);
     await this.userRepo.remove(user);
   }
 
-  // usado pelo AuthService para atualizar MFA secret ou status
   async updateMfa(userId: number, data: Partial<User>): Promise<User> {
     const user = await this.findById(userId);
     Object.assign(user, data);

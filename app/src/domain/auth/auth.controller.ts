@@ -1,42 +1,40 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+// Em: auth.controller.ts
+
+import {
+  Controller,
+  Post,
+  Body,
+  Request,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common'; // Adicione Request, HttpCode, HttpStatus
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto, MfaDto } from './dto/auth.dto';
+import { LoginDto, RegisterDto, MfaDto } from './dto/auth.dto'; // Adicione MfaDto
 import { Public } from './decorators/decorator.jwt';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Public() // rota pública, não precisa de JWT
-  @Post('register')
-  async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
-  }
-
   @Public()
   @Post('login')
   async login(@Body() dto: LoginDto) {
-    const user = await this.authService.validateUser(dto.email, dto.password);
+    const result = await this.authService.login(dto);
 
-    if (user.mfa && !dto.mfaCode) {
-      return { mfaRequired: true };
+    if ('mfaRequired' in result && result.mfaRequired) {
+      return { message: 'MFA code required' };
     }
 
-    if (user.mfa && dto.mfaCode) {
-      this.authService.verifyMfa(user, dto.mfaCode);
+    if ('mfaSetupRequired' in result && result.mfaSetupRequired) {
+      return { message: 'MFA setup required' };
     }
 
-    return this.authService.login(user);
+    return result;
   }
 
-  @Post('mfa/setup') // JWT já é global, não precisa colocar UseGuards
-  async setupMfa(@Request() req) {
-    return this.authService.generateMfaSecret(req.user.id);
-  }
-
-  @Post('mfa/verify')
-  async verifyMfa(@Request() req, @Body() dto: MfaDto) {
-    const user = await this.authService.getUser(req.user.id);
-    return this.authService.verifyMfa(user, dto.mfaCode);
+  @Public()
+  @Post('mfa/enable')
+  async enableMfa(@Body() dto: { email: string; mfaCode: string }) {
+    const user = await this.authService.getUserByEmail(dto.email);
+    return this.authService.enableMfa(user, dto.mfaCode);
   }
 }

@@ -8,35 +8,56 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CompanysService } from './companys.service';
-import { CreateCompanyDto } from './dto/company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import {
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  ReadCompanyDto,
+} from './dto/company.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('companys')
 export class CompanysController {
   constructor(private readonly companysService: CompanysService) {}
 
   @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companysService.create(createCompanyDto);
+  async create(
+    @Body() createCompanyDto: CreateCompanyDto,
+  ): Promise<ReadCompanyDto> {
+    const company = await this.companysService.create(createCompanyDto);
+    return plainToInstance(ReadCompanyDto, company, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get()
-  findAll() {
-    return this.companysService.findAll();
+  async findAll(): Promise<ReadCompanyDto[]> {
+    const companies = await this.companysService.findAll();
+    return plainToInstance(ReadCompanyDto, companies, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companysService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<ReadCompanyDto> {
+    const company = await this.companysService.findOne(+id);
+    return plainToInstance(ReadCompanyDto, company, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companysService.update(+id, updateCompanyDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateCompanyDto: UpdateCompanyDto,
+  ): Promise<ReadCompanyDto> {
+    const company = await this.companysService.update(+id, updateCompanyDto);
+    return plainToInstance(ReadCompanyDto, company, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.companysService.remove(+id);
   }
 }

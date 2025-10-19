@@ -1,6 +1,6 @@
 import { IsString, IsOptional, IsBoolean, IsNumber, Min } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
 export class CreateSiloDto {
   @IsString()
@@ -83,6 +83,7 @@ export class ReadSiloDto {
   minAirQuality?: number;
 
   @Expose()
+  @Transform(({ obj }) => obj.company?.name)
   companyName: string;
 
   @Expose()
