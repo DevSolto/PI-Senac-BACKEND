@@ -15,7 +15,7 @@ import {
 } from './dto/company.dto';
 import { plainToInstance } from 'class-transformer';
 
-@Controller('companys')
+@Controller('companies')
 export class CompanysController {
   constructor(private readonly companysService: CompanysService) {}
 
