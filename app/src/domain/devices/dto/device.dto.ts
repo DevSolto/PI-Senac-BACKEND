@@ -4,7 +4,7 @@ import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateDeviceDto {
   @IsString()
-  id: string; // ex: 'esp32-001'
+  id: string; 
 
   @IsString()
   name: string;

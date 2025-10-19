@@ -14,11 +14,13 @@ import {
   ReadCompanyDto,
 } from './dto/company.dto';
 import { plainToInstance } from 'class-transformer';
+import { Public } from '../auth/decorators/decorator.jwt';
 
 @Controller('companies')
 export class CompanysController {
   constructor(private readonly companysService: CompanysService) {}
 
+  @Public()
   @Post()
   async create(
     @Body() createCompanyDto: CreateCompanyDto,

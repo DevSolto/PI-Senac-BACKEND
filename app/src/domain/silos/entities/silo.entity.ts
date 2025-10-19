@@ -20,10 +20,10 @@ export class Silo {
   description?: string;
 
   @Column()
-  grain: string; // tipo de grão armazenado
+  grain: string; 
 
   @Column({ type: 'boolean', default: false })
-  inUse: boolean; // se está sendo usado ou não
+  inUse: boolean; 
 
   // Limites de monitoramento
   @Column({ type: 'float', nullable: true })

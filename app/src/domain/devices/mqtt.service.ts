@@ -40,18 +40,7 @@ export class MqttService implements OnModuleInit {
     if (messageType === 'hello') {
       this.eventEmitter.emit('device.hello', { deviceId });
     } 
-    else if (messageType === 'data') {
-      const data = JSON.parse(payload);
-      const messageData = {
-        timestamp: Date.now(),
-        payload: data,
-      };
-      const messageString = JSON.stringify(messageData);
-      const historyKey = `device:history:${deviceId}`;
-      this.redisClient.zadd(historyKey, messageData.timestamp, messageString);
-      const channel = `device-updates:${deviceId}`;
-      this.redisClient.publish(channel, messageString);
-    }
+    
   }
 
   sendCommand(deviceId: string, command: string) {

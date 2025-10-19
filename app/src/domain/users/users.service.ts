@@ -48,7 +48,7 @@ export class UsersService {
     }
     Object.assign(user, userData);
     if (companyId) {
-      user.company = { id: companyId } as Company; // as Company necessario para o tipo
+      user.company = { id: companyId } as Company; 
     }
 
     return this.userRepo.save(user);
