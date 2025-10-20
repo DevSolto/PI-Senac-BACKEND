@@ -12,9 +12,27 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
     {
       provide: REDIS_CLIENT,
       useFactory: (configService: ConfigService) => {
+        const redisUrl = configService.get<string>('REDIS_URL');
+
+        if (redisUrl) {
+          return new Redis(redisUrl);
+        }
+
+        const safeParsePort = (value?: string) => {
+          if (!value) {
+            return undefined;
+          }
+
+          const parsed = Number.parseInt(value, 10);
+          return Number.isNaN(parsed) ? undefined : parsed;
+        };
+
+        const host = configService.get<string>('REDIS_HOST');
+        const port = safeParsePort(configService.get<string>('REDIS_PORT'));
+
         return new Redis({
-          host: configService.get<string>('REDIS_HOST'),
-          port: configService.get<number>('REDIS_PORT'),
+          host,
+          port,
         });
       },
       inject: [ConfigService],
