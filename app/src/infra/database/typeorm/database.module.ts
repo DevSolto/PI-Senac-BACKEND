@@ -9,9 +9,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const databaseUrl = configService.get<string>('DATABASE_URL');
+        const safeParsePort = (value?: string) => {
+          if (!value) {
+            return undefined;
+          }
 
-        const port = configService.get<string>('DB_PORT');
+          const parsed = Number.parseInt(value, 10);
+          return Number.isNaN(parsed) ? undefined : parsed;
+        };
+
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+        const port = safeParsePort(configService.get<string>('DB_PORT'));
 
         return {
           type: 'postgres',
@@ -19,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             ? { url: databaseUrl }
             : {
                 host: configService.get<string>('DB_HOST'),
-                port: port ? parseInt(port, 10) : undefined,
+                port,
                 username: configService.get<string>('DB_USER'),
                 password: configService.get<string>('DB_PASSWORD'),
                 database: configService.get<string>('DB_NAME'),

@@ -18,12 +18,21 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
           return new Redis(redisUrl);
         }
 
+        const safeParsePort = (value?: string) => {
+          if (!value) {
+            return undefined;
+          }
+
+          const parsed = Number.parseInt(value, 10);
+          return Number.isNaN(parsed) ? undefined : parsed;
+        };
+
         const host = configService.get<string>('REDIS_HOST');
-        const port = configService.get<string>('REDIS_PORT');
+        const port = safeParsePort(configService.get<string>('REDIS_PORT'));
 
         return new Redis({
           host,
-          port: port ? parseInt(port, 10) : undefined,
+          port,
         });
       },
       inject: [ConfigService],

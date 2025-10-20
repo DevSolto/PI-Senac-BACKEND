@@ -3,7 +3,17 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+const safeParsePort = (value?: string) => {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
+};
+
 const databaseUrl = process.env.DATABASE_URL;
+const port = safeParsePort(process.env.DB_PORT);
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -11,7 +21,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     ? { url: databaseUrl }
     : {
         host: process.env.DB_HOST,
-        port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
+        port: port ?? 5432,
         username: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
