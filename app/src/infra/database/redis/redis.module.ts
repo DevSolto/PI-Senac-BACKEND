@@ -12,9 +12,18 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
     {
       provide: REDIS_CLIENT,
       useFactory: (configService: ConfigService) => {
+        const redisUrl = configService.get<string>('REDIS_URL');
+
+        if (redisUrl) {
+          return new Redis(redisUrl);
+        }
+
+        const host = configService.get<string>('REDIS_HOST');
+        const port = configService.get<string>('REDIS_PORT');
+
         return new Redis({
-          host: configService.get<string>('REDIS_HOST'),
-          port: configService.get<number>('REDIS_PORT'),
+          host,
+          port: port ? parseInt(port, 10) : undefined,
         });
       },
       inject: [ConfigService],
