@@ -19,7 +19,7 @@ import { Public } from './decorators/decorator.jwt';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
   @Public()
   @Post('login')
   async login(@Body() dto: LoginDto) {
@@ -27,12 +27,8 @@ export class AuthController {
 
     if ('mfaRequired' in result && result.mfaRequired) {
       return {
-        message: 'MFA code required',
-        mfaRequired: true,
-        hint: 'Informe o código gerado no app autenticador para concluir o login.',
-        recoveryHint:
-          'Se você perdeu o acesso ao aplicativo autenticador, solicite um novo QR code pela rota /auth/mfa/reset informando e-mail e senha.',
-      };
+        message: 'MFA code required'
+      }
     }
 
     if ('mfaSetupRequired' in result && result.mfaSetupRequired) {
@@ -54,11 +50,5 @@ export class AuthController {
   async enableMfa(@Body() dto: { email: string; mfaCode: string }) {
     const user = await this.authService.getUserByEmail(dto.email);
     return this.authService.enableMfa(user, dto.mfaCode);
-  }
-
-  @Public()
-  @Post('mfa/reset')
-  async resetMfa(@Body() dto: ResetMfaDto) {
-    return this.authService.resetMfa(dto);
   }
 }

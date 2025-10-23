@@ -11,7 +11,7 @@ export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async register(dto: RegisterDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -102,23 +102,6 @@ export class AuthService {
     return {
       message: 'MFA enabled successfully',
       ...jwt,
-    };
-  }
-
-  async resetMfa(dto: ResetMfaDto) {
-    const user = await this.validateUser(dto.email, dto.password);
-
-    await this.userService.updateMfa(user.id, {
-      mfaSecret: null,
-      mfaEnabledAt: null,
-    });
-
-    const mfaData = await this.generateMfaSecret(user.id);
-
-    return {
-      message:
-        'MFA reiniciado. Escaneie o novo QR code no aplicativo autenticador e confirme o código para concluir.',
-      ...mfaData,
     };
   }
 
