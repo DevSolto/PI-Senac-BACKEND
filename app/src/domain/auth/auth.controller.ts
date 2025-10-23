@@ -25,7 +25,13 @@ export class AuthController {
     }
 
     if ('mfaSetupRequired' in result && result.mfaSetupRequired) {
-      return { message: 'MFA setup required' };
+      const user = await this.authService.getUserByEmail(dto.email);
+      const mfaData = await this.authService.generateMfaSecret(user.id);
+
+      return {
+        message: 'MFA setup required',
+        ...mfaData,
+      };
     }
 
     return result;
