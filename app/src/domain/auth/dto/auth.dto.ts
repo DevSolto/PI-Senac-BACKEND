@@ -33,3 +33,11 @@ export class MfaDto {
   @IsString()
   mfaCode: string;
 }
+
+export class ResetMfaDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+}

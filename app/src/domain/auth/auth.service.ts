@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import * as speakeasy from 'speakeasy';
 import * as bcrypt from 'bcrypt';
 import * as qrcode from 'qrcode';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { LoginDto, RegisterDto, ResetMfaDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -57,17 +57,40 @@ export class AuthService {
     return true;
   }
 
+  private async buildMfaResponse(
+    userId: number,
+    secretBase32: string,
+    otpauthUrl?: string,
+  ) {
+    const resolvedOtpauthUrl =
+      otpauthUrl ??
+      speakeasy.otpauthURL({
+        secret: secretBase32,
+        label: `GrãoSeguro (${userId})`,
+        encoding: 'base32',
+      });
+
+    const qrCodeDataUrl = await qrcode.toDataURL(resolvedOtpauthUrl);
+
+    return {
+      otpauth_url: resolvedOtpauthUrl,
+      qrCodeDataUrl,
+    };
+  }
+
   async generateMfaSecret(userId: number) {
     const secret = speakeasy.generateSecret({ name: `GrãoSeguro (${userId})` });
     await this.userService.update(userId, { mfaSecret: secret.base32 });
 
-    // QR Code em Base64
-    const qrCodeDataUrl = await qrcode.toDataURL(secret.otpauth_url);
+    return this.buildMfaResponse(userId, secret.base32, secret.otpauth_url);
+  }
 
-    return {
-      otpauth_url: secret.otpauth_url,
-      qrCodeDataUrl,
-    };
+  async prepareMfaSetup(user: any) {
+    if (user.mfaSecret) {
+      return this.buildMfaResponse(user.id, user.mfaSecret);
+    }
+
+    return this.generateMfaSecret(user.id);
   }
 
   async enableMfa(user: any, code: string) {
@@ -79,6 +102,23 @@ export class AuthService {
     return {
       message: 'MFA enabled successfully',
       ...jwt,
+    };
+  }
+
+  async resetMfa(dto: ResetMfaDto) {
+    const user = await this.validateUser(dto.email, dto.password);
+
+    await this.userService.updateMfa(user.id, {
+      mfaSecret: null,
+      mfaEnabledAt: null,
+    });
+
+    const mfaData = await this.generateMfaSecret(user.id);
+
+    return {
+      message:
+        'MFA reiniciado. Escaneie o novo QR code no aplicativo autenticador e confirme o código para concluir.',
+      ...mfaData,
     };
   }
 
